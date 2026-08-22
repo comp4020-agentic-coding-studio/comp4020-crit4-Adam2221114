@@ -35,6 +35,13 @@ ship); CI runs the same plus links, secrets and the deploy. Read the failure.
 `spec/README.md`, `PROCESS.md` and `reflections/README.md` are in this repo and
 say what they are for.
 
+## Working conventions
+
+- After visual or content changes, verify the rendered site and rerun
+  `pnpm check`, `pnpm build`, and
+  `pnpm dlx linkinator ./dist --silent --skip "^https?://(?!localhost|127)"`
+  before committing.
+
 ## This file is yours
 
 A starting point, not a rulebook. As you learn what your prototype needs --- a
