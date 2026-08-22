@@ -1,3 +1,5 @@
-# esbuild (used by Vite) needs its postinstall to set up its native binary.
+# esbuild (used by Astro) needs its postinstall to set up its native binary.
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - astro@7.2.0

@@ -43,7 +43,7 @@ problems with mise.
 
 ## What's here
 
-- `index.html`, `styles.css`, `main.ts` --- a minimal starting site. Replace it.
+- `src/pages/index.astro`, `src/styles.css` --- a minimal starting site. Replace it.
 - `mise.toml` --- the tested Node and pnpm versions for this template.
 - `spec/` --- what the checks are for (`README.md`), the shipped invariants
   (`invariants.test.ts`), and a replaceable starter test (`starter.test.ts`);
@@ -59,10 +59,8 @@ problems with mise.
   like an API key, so your COMP4020 key can't end up in a public repo. Installed
   automatically by `pnpm install`.
 
-This template is SSG-agnostic: plain HTML/CSS/TypeScript on Vite, so you can add
-Astro, Eleventy, or any static generator later without changing how it deploys.
-The course plugin's `stack` skill performs the swap for you — to the course
-default (Astro) or bare HTML/CSS — with the Pages base path, lockfile, and CI
-link check handled.
+This template started SSG-agnostic (plain HTML/CSS/TypeScript on Vite) and has
+been swapped to Astro, the course default, by the `start` course skill --- the
+Pages base path, lockfile, and CI link check were all updated to match.
 
 See the course site for how the checks map to each week of the course.
