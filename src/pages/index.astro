@@ -7,40 +7,192 @@ import "../styles.css";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>COMP4020 prototype</title>
+    <title>Deck — a live Web Audio DJ controller</title>
     <meta
       name="description"
-      content="Replace this with one sentence saying what this page is. A search result and a link preview both show it."
+      content="A synthetic two-deck DJ controller: every sound is generated live in the browser with the Web Audio API, played with jog wheels, knobs, faders and a crossfader."
     />
-
-    <!--
-      The link-preview card: public/card.png, 1200x630 --- replace it. The URL
-      resolves against this page, like any link. No og:title/og:description:
-      scrapers fall back to the <title> and description above.
-    -->
     <meta property="og:type" content="website" />
     <meta property="og:image" content="./card.png" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
-    <header>
+    <header class="chrome-header">
       <nav aria-label="Primary">
-        <a href="./">Home</a>
+        <a href="./">&larr; exit</a>
       </nav>
     </header>
     <main>
-      <h1>COMP4020 prototype</h1>
-      <p data-testid="intro">
-        Replace this with your prototype. This week's brief is on the course website;
-        <code>spec/README.md</code> explains how the checks in this repo relate to it.
-      </p>
+      <div class="panel">
+        <div class="panel-sweep" aria-hidden="true"></div>
+        <h1 class="brand">DECK</h1>
+        <button
+          type="button"
+          id="sound-toggle"
+          class="sound-toggle"
+          aria-pressed="false"
+        >SOUND</button>
+
+        <section class="deck deck-a" aria-label="Deck A">
+          <div class="wheel-group">
+            <div
+              class="wheel"
+              data-wheel="a"
+              tabindex="0"
+              aria-label="Deck A jog wheel: twist to change the note, spin faster for a louder, brighter sound"
+            >
+              <div class="wheel-halo" aria-hidden="true"></div>
+              <div class="wheel-scan" aria-hidden="true"></div>
+              <div class="wheel-platter" data-wheel-platter>
+                <div class="wheel-marker"></div>
+              </div>
+              <input type="range" min="-60" max="60" step="1" value="0" aria-label="Deck A pitch" />
+            </div>
+            <p class="control-hint">PITCH<br /><span>twist for notes · spin faster = louder &amp; brighter</span></p>
+          </div>
+          <div class="signal-conduit signal-conduit-a" data-signal-conduit="a" aria-hidden="true"></div>
+          <div class="deck-row">
+            <div class="knob-group">
+              <div class="knob" data-filter-knob="a">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.4"
+                  aria-label="Deck A filter: left makes the sound deeper and darker, right makes it brighter and sharper"
+                />
+                <div class="knob-ring" aria-hidden="true"></div>
+                <div class="knob-face">
+                  <div class="knob-indicator" data-knob-indicator></div>
+                </div>
+              </div>
+              <span class="knob-label">FILTER</span>
+              <p class="control-hint control-hint-row"><span>darker</span><span>brighter</span></p>
+            </div>
+            <div class="fader-well">
+              <span class="fader-hint">louder</span>
+              <input
+                type="range"
+                class="fader fader-vertical"
+                data-channel-fader="a"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.8"
+                aria-label="Deck A channel level: up is louder, down is quieter"
+                aria-orientation="vertical"
+              />
+              <span class="fader-hint">quieter</span>
+              <span class="fader-label">LEVEL</span>
+            </div>
+            <div class="pads">
+              <button type="button" class="pad" data-pad-deck="a" data-pad-character="1">
+                BUZZ<span class="pad-hint">rough · electric</span>
+              </button>
+              <button type="button" class="pad" data-pad-deck="a" data-pad-character="2">
+                HOLLOW<span class="pad-hint">thin · airy</span>
+              </button>
+            </div>
+          </div>
+          <span class="deck-label">A</span>
+        </section>
+
+        <section class="mixer" aria-label="Mixer">
+          <canvas class="signal-canvas" data-signal-canvas aria-hidden="true"></canvas>
+          <p id="invitation" class="invitation">TOUCH THE DECK</p>
+          <div class="crossfader-well">
+            <div class="crossfader-labels">
+              <span class="xf-dot" data-xf-dot="a">A</span>
+              <span class="xf-dot" data-xf-dot="b">B</span>
+            </div>
+            <input
+              type="range"
+              id="crossfader"
+              class="fader fader-horizontal"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+              aria-label="Crossfader: left plays more of Deck A, right plays more of Deck B"
+            />
+            <p class="control-hint control-hint-row"><span>more A</span><span>more B</span></p>
+            <div class="equalizer" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="deck deck-b" aria-label="Deck B">
+          <div class="wheel-group">
+            <div
+              class="wheel"
+              data-wheel="b"
+              tabindex="0"
+              aria-label="Deck B jog wheel: twist to change the note, spin faster for a louder, brighter sound"
+            >
+              <div class="wheel-halo" aria-hidden="true"></div>
+              <div class="wheel-scan" aria-hidden="true"></div>
+              <div class="wheel-platter" data-wheel-platter>
+                <div class="wheel-marker"></div>
+              </div>
+              <input type="range" min="-60" max="60" step="1" value="0" aria-label="Deck B pitch" />
+            </div>
+            <p class="control-hint">PITCH<br /><span>twist for notes · spin faster = louder &amp; brighter</span></p>
+          </div>
+          <div class="signal-conduit signal-conduit-b" data-signal-conduit="b" aria-hidden="true"></div>
+          <div class="deck-row">
+            <div class="pads">
+              <button type="button" class="pad" data-pad-deck="b" data-pad-character="0">
+                GLASS<span class="pad-hint">bright · crisp</span>
+              </button>
+              <button type="button" class="pad" data-pad-deck="b" data-pad-character="2">
+                HOLLOW<span class="pad-hint">thin · airy</span>
+              </button>
+            </div>
+            <div class="fader-well">
+              <span class="fader-hint">louder</span>
+              <input
+                type="range"
+                class="fader fader-vertical"
+                data-channel-fader="b"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.8"
+                aria-label="Deck B channel level: up is louder, down is quieter"
+                aria-orientation="vertical"
+              />
+              <span class="fader-hint">quieter</span>
+              <span class="fader-label">LEVEL</span>
+            </div>
+            <div class="knob-group">
+              <div class="knob" data-filter-knob="b">
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.4"
+                  aria-label="Deck B filter: left makes the sound deeper and darker, right makes it brighter and sharper"
+                />
+                <div class="knob-ring" aria-hidden="true"></div>
+                <div class="knob-face">
+                  <div class="knob-indicator" data-knob-indicator></div>
+                </div>
+              </div>
+              <span class="knob-label">FILTER</span>
+              <p class="control-hint control-hint-row"><span>darker</span><span>brighter</span></p>
+            </div>
+          </div>
+          <span class="deck-label">B</span>
+        </section>
+      </div>
     </main>
 
     <script>
-      const intro = document.querySelector<HTMLElement>('[data-testid="intro"]');
-      if (intro) {
-        intro.dataset.ready = "true";
-      }
+      import { initInstrument } from "../instrument/main";
+      initInstrument();
     </script>
   </body>
 </html>

@@ -42,6 +42,44 @@ say what they are for.
   `pnpm dlx linkinator ./dist --silent --skip "^https?://(?!localhost|127)"`
   before committing.
 
+## C4: the instrument
+
+A realistic compact DJ controller, not a synth dashboard or a play surface.
+**LEFT DECK | CENTER MIXER | RIGHT DECK** — a stranger should recognise DJ
+hardware before reading anything.
+
+Two decks, each a persistent Web Audio voice:
+- jog wheel → pitch (cumulative rotation, wrapped cyclically onto the
+  pentatonic scale — always consonant, however far it spins)
+- jog wheel spin speed → live filter brightness + intensity (a wheel has no
+  Y axis, so this is what gesture speed did on the old play surface)
+- FILTER knob → base brightness for that deck, live while sounding
+- channel fader → that deck's level into the mix
+- 1–2 performance pads → live-swap that deck's oscillator waveform without
+  interrupting the sustained note
+
+Crossfader mixes the two decks with an equal-power law: center = both
+audible, no dip or spike at any position.
+
+**Persistent, hardware-synth style, same principle as before.** The first
+gesture on a deck resumes the shared `AudioContext` (autoplay policy — no
+sound before it) and starts that deck's oscillators; they keep sounding
+after release. Nothing rebuilds a voice on every interaction — controls
+modify a live `AudioParam` via `engine.ts`'s `startDeck`/`updateDeck`/
+`settleDeck`/`setDeckFilter`/`setDeckChannelGain`, or, for pads, live-swap
+`OscillatorNode.type` via `setDeckCharacter`. A separate SOUND toggle ramps a
+dedicated mute `GainNode`; it never stops an oscillator.
+
+**Phase 1 only:** two decks (wheel, filter, fader, 1–2 pads each), one
+crossfader, the `TOUCH THE DECK` invitation, the SOUND toggle. No PULSE/
+tempo knob, no BPM sync, looping, track loading, waveform displays, cue
+points, EQ bands, effects menus, or song libraries — not yet.
+
+**Automated checks are not sufficient here.** `pnpm check` only proves the
+code runs; it can't judge whether it looks and feels like real hardware.
+Manual play-and-look in a real browser is a hard gate before any Phase 2
+work: stop after Phase 1 is green and wait for that feedback.
+
 ## This file is yours
 
 A starting point, not a rulebook. As you learn what your prototype needs --- a
