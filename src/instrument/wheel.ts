@@ -1,4 +1,4 @@
-import { frequencyForRotation } from "./scale";
+import { frequencyForRotation, stepIndexForRotation } from "./scale";
 
 // Calibrates raw angular speed (rad/ms) into the engine's 0..1 intensity
 // range — tuned so a comfortable spin reaches "fast" without needing a flick.
@@ -11,7 +11,7 @@ const RADIANS_PER_KEYBOARD_STEP = Math.PI / 5;
 
 export interface WheelOptions {
   onStart: (freqHz: number) => void;
-  onUpdate: (freqHz: number, speedNorm: number) => void;
+  onUpdate: (freqHz: number, speedNorm: number, stepIndex: number) => void;
   onSettle: () => void;
 }
 
@@ -36,7 +36,7 @@ export function attachWheel(root: HTMLElement, { onStart, onUpdate, onSettle }: 
     platter.style.transform = `rotate(${rotation}rad)`;
   }
 
-  function begin(freqHz: number): void {
+  function begin(freqHz: number, stepIndex: number): void {
     if (!started) {
       started = true;
       // Marks the deck as sounding so CSS can give it a permanent, gentle
@@ -44,7 +44,7 @@ export function attachWheel(root: HTMLElement, { onStart, onUpdate, onSettle }: 
       root.classList.add("is-live");
       onStart(freqHz);
     }
-    onUpdate(freqHz, 0);
+    onUpdate(freqHz, 0, stepIndex);
   }
 
   function pulseSpin(intensity: number, holdMs = 0): void {
@@ -74,7 +74,7 @@ export function attachWheel(root: HTMLElement, { onStart, onUpdate, onSettle }: 
     input.focus();
     lastAngle = angleFromEvent(event);
     lastTime = event.timeStamp;
-    begin(frequencyForRotation(rotation));
+    begin(frequencyForRotation(rotation), stepIndexForRotation(rotation));
     event.preventDefault();
   });
 
@@ -91,7 +91,7 @@ export function attachWheel(root: HTMLElement, { onStart, onUpdate, onSettle }: 
     lastTime = event.timeStamp;
     render();
     pulseSpin(speedNorm);
-    onUpdate(frequencyForRotation(rotation), speedNorm);
+    onUpdate(frequencyForRotation(rotation), speedNorm, stepIndexForRotation(rotation));
     event.preventDefault();
   });
 
@@ -111,7 +111,7 @@ export function attachWheel(root: HTMLElement, { onStart, onUpdate, onSettle }: 
     rotation = Number(input.value) * RADIANS_PER_KEYBOARD_STEP;
     render();
     pulseSpin(0.6, 200);
-    begin(frequencyForRotation(rotation));
+    begin(frequencyForRotation(rotation), stepIndexForRotation(rotation));
     onSettle();
   });
 

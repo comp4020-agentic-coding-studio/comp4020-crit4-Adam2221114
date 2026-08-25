@@ -33,3 +33,10 @@ export function frequencyForRotation(radians: number): number {
   const index = (Math.round(stepsFloat) % SCALE.length + SCALE.length) % SCALE.length;
   return SCALE[index];
 }
+
+// Unwrapped (not cyclic like frequencyForRotation's index): a live "how far
+// from where you started" readout, e.g. for a brief on-screen "+3" while the
+// wheel is being turned.
+export function stepIndexForRotation(radians: number): number {
+  return Math.round((radians / (2 * Math.PI)) * STEPS_PER_TURN);
+}
